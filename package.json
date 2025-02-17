@@ -9,13 +9,14 @@
     "nodemon": "^3.1.9",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "query": "^0.2.0",
     "sequelize": "^6.37.5"
   },
   "name": "kelompok4",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon index.js"
+    "test": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
