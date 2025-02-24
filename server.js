@@ -6,7 +6,10 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const categoriesRoutes = require('./routes/categories');
-const authRoutes = require('./routes/auth');  
+const authRoutes = require('./routes/auth');
+const usersRoutes = require('./routes/user');  
+
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,6 +22,9 @@ app.use(morgan('dev'));
 // Routing
 app.use('/api/kategori', categoriesRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRoutes);
+
+
 
 // Menjalankan server
 app.listen(PORT, () => {
