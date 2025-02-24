@@ -1,67 +1,42 @@
 const express = require('express');
 const router = express.Router();
-const Kategori = require('../models/categories');  // Mengimpor model Kategori
+const db = require('../config/database');
 
-// Get all categories
-router.get('/categories', async (req, res) => {
+// Mendapatkan Semua Kategori
+router.get('/', async (req, res) => {
     try {
-        const categories = await Kategori.find();  // Mengambil semua kategori
-        res.status(200).json(categories);
+        console.log('📥 Mendapatkan semua kategori...');
+        const [results] = await db.query('SELECT * FROM categories');
+        
+        if (results.length > 0) {
+            console.log('✅ Kategori ditemukan:', results);
+            res.json(results);
+        } else {
+            console.log('⚠️ Tidak ada kategori yang ditemukan.');
+            res.status(404).json({ message: 'Tidak ada kategori yang ditemukan.' });
+        }
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('❌ Gagal mendapatkan kategori:', err.message);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
-// Add a new category
-router.post('/categorie', async (req, res) => {
+// Menambahkan Kategori Baru
+router.post('/', async (req, res) => {
     try {
-        const { name } = req.body;
-        if (!name) {
-            return res.status(400).json({ error: "Name is required" });
+        const { name, description } = req.body;
+        if (!name || !description) {
+            return res.status(400).json({ message: 'Nama dan deskripsi wajib diisi.' });
         }
-
-        const newCategory = new Kategori({ name }); // Buat instance kategori baru
-        await newCategory.save(); // Simpan ke database
-
-        res.status(201).json({ message: "Category berhasil ditambahkan.", category: newCategory });
+        
+        const query = 'INSERT INTO categories (name, description) VALUES (?, ?)';
+        const [result] = await db.query(query, [name, description]);
+        
+        console.log('✅ Kategori baru berhasil ditambahkan:', result);
+        res.status(201).json({ message: 'Kategori berhasil ditambahkan.' });
     } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-
-// Update a category
-router.put('/:id', async (req, res) => {
-    const { name } = req.body;
-    const { id } = req.params;
-
-    if (!name) {
-        return res.status(400).json({ error: 'Name is required' });
-    }
-
-    try {
-        const updatedCategory = await Kategori.findByIdAndUpdate(id, { name }, { new: true });  // Memperbarui kategori
-        if (!updatedCategory) {
-            return res.status(404).json({ error: 'Category not found' });
-        }
-        res.status(200).json({ message: 'Category Updated', updatedCategory });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Delete a category
-router.delete('/:id', async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const deletedCategory = await Kategori.findByIdAndDelete(id);  // Menghapus kategori berdasarkan ID
-        if (!deletedCategory) {
-            return res.status(404).json({ error: 'Category not found' });
-        }
-        res.status(200).json({ message: 'Category Deleted', id });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('❌ Gagal menambahkan kategori:', err.message);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 

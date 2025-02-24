@@ -1,23 +1,30 @@
-const mongoose = require('mongoose');
-require('dotenv').config();
+const mysql = require('mysql2/promise');
+const dotenv = require('dotenv');
 
-console.log("MONGO_URI:", process.env.MONGO_URI); // Debugging
+// Menginisialisasi dotenv untuk membaca file .env
+dotenv.config();
 
-const connectDB = async () => {
+// Membuat koneksi pool ke database MySQL
+const db = mysql.createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
+
+// Menguji koneksi ke database
+(async () => {
     try {
-        if (!process.env.MONGO_URI) {
-            throw new Error("MONGO_URI tidak ditemukan dalam .env");
-        }
-
-        await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        console.log("✅ MongoDB Connected...");
+        const connection = await db.getConnection();
+        console.log('✅ Connected to MySQL database');
+        connection.release(); // Melepaskan koneksi setelah berhasil terhubung
     } catch (err) {
-        console.error("❌ MongoDB Connection Error:", err.message);
-        process.exit(1);
+        console.error('❌ Database connection failed:', err.message);
+        process.exit(1); // Keluar jika koneksi gagal
     }
-};
+})();
 
-module.exports = connectDB;
+module.exports = db;

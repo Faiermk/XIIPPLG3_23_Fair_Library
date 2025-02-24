@@ -1,14 +1,27 @@
-const mongoose = require('mongoose');
+const db = require('../config/database');
 
-// Define schema for category
-const kategoriSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-});
+// Ambil semua kategori
+async function getAllCategories() {
+    const [results] = await db.query('SELECT * FROM kategori');
+    return results;
+}
 
-const Kategori = mongoose.model('Kategori', kategoriSchema);
+// Tambah kategori baru
+async function addCategory(name) {
+    const [results] = await db.query('INSERT INTO kategori (name) VALUES (?)', [name]);
+    return { id: results.insertId, name };
+}
 
-module.exports = Kategori;
+// Update kategori berdasarkan ID
+async function updateCategory(id, name) {
+    const [results] = await db.query('UPDATE kategori SET name = ? WHERE id = ?', [name, id]);
+    return results.affectedRows > 0;
+}
+
+// Hapus kategori berdasarkan ID
+async function deleteCategory(id) {
+    const [results] = await db.query('DELETE FROM kategori WHERE id = ?', [id]);
+    return results.affectedRows > 0;
+}
+
+module.exports = { getAllCategories, addCategory, updateCategory, deleteCategory };
