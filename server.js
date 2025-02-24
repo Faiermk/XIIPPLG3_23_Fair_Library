@@ -9,9 +9,7 @@ const categoriesRoutes = require('./routes/categories');
 const authRoutes = require('./routes/auth');
 const usersRoutes = require('./routes/user');
 const bookRoutes = require('./routes/book');
-
-
-
+const loanRoutes = require('./routes/loan');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -26,9 +24,7 @@ app.use('/api/kategori', categoriesRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/books', bookRoutes);
-
-
-
+app.use('/api/loans', loanRoutes);
 
 // Menjalankan server
 app.listen(PORT, () => {
