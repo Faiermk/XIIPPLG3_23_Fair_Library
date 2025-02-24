@@ -7,7 +7,9 @@ const cors = require('cors');
 const morgan = require('morgan');
 const categoriesRoutes = require('./routes/categories');
 const authRoutes = require('./routes/auth');
-const usersRoutes = require('./routes/user');  
+const usersRoutes = require('./routes/user');
+const bookRoutes = require('./routes/book');
+
 
 
 
@@ -23,6 +25,8 @@ app.use(morgan('dev'));
 app.use('/api/kategori', categoriesRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/books', bookRoutes);
+
 
 
 
